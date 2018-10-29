@@ -9,9 +9,9 @@ spring:
       server:
         git:
           searchPaths: respo   # 配置仓库路径
-          uri: https://github.com/lbyjwwyqt147/MySpringCloudConfig/   # 配置git仓库地址
-          username: ''   # 访问git仓库的用户名   如果Git仓库为公开仓库，可以不填写用户名和密码，如果是私有仓库需要填写，
-          password: ''   # 访问git仓库的用户密码
+          uri: https://github.com/lbyjwwyqt147/my-cloud-demo/config-server/   # 配置git仓库地址
+          username: lbyjwwyqt147   # 访问git仓库的用户名   如果Git仓库为公开仓库，可以不填写用户名和密码，如果是私有仓库需要填写，
+          password: ljy671018   # 访问git仓库的用户密码
 
 
 
