@@ -2,11 +2,13 @@ package pers.liujunyi.cloud.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
-@EnableConfigServer
-@EnableEurekaClient
+@EnableConfigServer  //标记为 Config　Server
+@EnableDiscoveryClient
+@EnableEurekaClient  //标记为eureka client
 @SpringBootApplication
 public class ConfigServerApplication {
 
