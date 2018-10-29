@@ -4,12 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>pers.liujunyi.cloud</groupId>
-    <artifactId>security-server</artifactId>
+    <artifactId>my-cloud-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>security-server</name>
-    <description>使用 Spring Security 进行身份验证和访问控制</description>
+    <name>my-cloud-demo</name>
+    <description>spring cloud demo</description>
+
+ 
 
     <parent>
         <groupId>org.springframework.boot</groupId>
