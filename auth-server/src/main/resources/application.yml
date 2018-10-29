@@ -1,0 +1,26 @@
+server:
+  tomcat:
+    uri-encoding: UTF-8
+  port: 18088
+
+spring:
+  application:
+    name: auth-server  # 对应配置中心配置文件中的{application}部分
+  cloud:
+    config:
+      discovery:
+        enabled: true  # 配置中心的servieId，即服务名
+        service-id: config-server  # 配置中心的服务名
+      label: master    # 指明远程仓库的分支
+      profile: dev     #　对应配置中心配置文件中的{profile}部分 dev开发环境配置文件  test测试环境   pro正式环境
+  rabbitmq:
+    host: 101.132.136.225
+    port: 5672
+    username: rabbit
+    password: 123456
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:18080/eureka/

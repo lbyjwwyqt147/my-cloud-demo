@@ -1,0 +1,15 @@
+server:
+  port: 18080
+
+eureka:
+  instance:
+    hostname: localhost   # 主机地址
+  client:
+    registerWithEureka: false  # 注册中心告诉自己不能向自己注册自己，默认为true
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+spring:
+  application:
+    name: eurka-server
