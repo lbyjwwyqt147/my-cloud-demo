@@ -5,29 +5,52 @@ spring:
     name: config-server
   cloud:
     config:
-      label: master  # 配置仓库的分支
       server:
         git:
-          searchPaths: /**    #远程仓库的目录，本例子配置文件在config-server文件夹目录中
-          uri: https://github.com/lbyjwwyqt147/MySpringCloudConfig/   # 配置git仓库地址
-          username: ''   # 访问git仓库的用户名   如果Git仓库为公开仓库，可以不填写用户名和密码，如果是私有仓库需要填写，
-          password: ''   # 访问git仓库的用户密码
+          search-paths: /**    #远程仓库的目录，本例子配置文件在根目录中
+          uri: https://github.com/lbyjwwyqt147/MySpringCloudConfig.git   # 配置git仓库地址
+          #username: ''   # 访问git仓库的用户名   如果Git仓库为公开仓库，可以不填写用户名和密码，如果是私有仓库需要填写，
+          #password: ''   # 访问git仓库的用户密码
+          default-label: master  # 配置仓库的分支
+          basedir: D:\git_projects\MySpringCloudConfig  # 指定本地git仓库的路径
 
+    #消息总线配置
+    bus:
+      enabled: true
+      trace:
+        enabled: true
+      refresh:
+        enabled: true  #开启总线消息更新功能
+
+  # rabbitmq 配置
+  rabbitmq:
+    host: 101.132.136.225
+    port: 5672
+    username: rabbit
+    password: 123456
+    virtual-host: /
 
 
 eureka:
   client:
     service-url:
-      default-url: http://localhost:18080/eureka/　　 #注册中心地址
-      register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 20      # 多久拉取服务注册信息 单位　秒
+      defaultZone: http://localhost:18080/eureka/  #注册中心地址
+    registry-fetch-interval-seconds: 20      # 多久拉取服务注册信息 表示从“发现”服务器获取注册表信息的频率（以秒为单位）。
   instance:
-    # 60s未收到心跳，剔除instance 要比心跳时间大
+    # 60s未收到心跳，剔除instance 要比心跳时间大 服务器端等待的时间，因为它收到了最后的心跳，然后才可以从它的视图中删除这个实例，并且不允许流量进入这个实例。将这个值设置得太长可能意味着，即使实例不存在，流量也可以被路由到实例。将这个值设置得太小可能意味着，由于临时网络故障，该实例可能会被排除在流量之外。这个值的设置至少要高于leaseRenewalIntervalInSeconds中指定的值。默认90s
     lease-expiration-duration-in-seconds: 60
-    # 心跳时间　即每15秒发送一次心跳
-    lease-renewal-interval-in-seconds: １5
-    prefer-ip-address: false
+    # 心跳时间　即每15秒发送一次心跳  表明客户端需要将心跳发送到服务器端，以表明它还活着。如果心跳停止的时间超过了服务器设置的等待时间，那么服务器端将会从它的服务列表中删除该实例，从而将流量排除在该实例之外。默认30s
+    lease-renewal-interval-in-seconds: 15
+    prefer-ip-address: true
     ip-address: 127.0.0.1
     hostname: localhost
-    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}${random.int}:${server.port}
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}   #eureka client向eureka server注册使用真实ip设置 默认为本机机器名
+
+
+
+# 屏蔽安全验证
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'  # 可以选择【"health","mappings","bus-refresh"】三种选项暴露那些端点

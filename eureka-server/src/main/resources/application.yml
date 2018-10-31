@@ -15,4 +15,4 @@ eureka:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
   server:
     enable-self-preservation: false     # 关闭自我保护
-    eviction-interval-timer-in-ms: 60000  # 清理时间间隔
+    eviction-interval-timer-in-ms: 60000  # 清理时间间隔  服务器清理服务列表的定时器 单位 毫秒

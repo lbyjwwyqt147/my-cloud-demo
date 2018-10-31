@@ -14,6 +14,7 @@ spring:
       label: master    # 指明远程仓库的分支
       profile: dev     #　对应配置中心配置文件中的{profile}部分　本例子中读取的配置文件为 auth-server-dev.yml dev开发环境配置文件  test测试环境   pro正式环境
       name: auth-server  #　对应配置中心配置文件中的{application}部分　　多个用,隔开
+      fail-fast: true
     #消息总线配置
     bus:
       enabled: true
@@ -22,6 +23,21 @@ spring:
       refresh:
         enabled: true  #开启总线消息更新功能
 
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:18080/eureka/  #注册中心地址
+    registry-fetch-interval-seconds: 20      # 多久拉取服务注册信息 表示从“发现”服务器获取注册表信息的频率（以秒为单位）。
+  instance:
+    # 60s未收到心跳，剔除instance 要比心跳时间大 服务器端等待的时间，因为它收到了最后的心跳，然后才可以从它的视图中删除这个实例，并且不允许流量进入这个实例。将这个值设置得太长可能意味着，即使实例不存在，流量也可以被路由到实例。将这个值设置得太小可能意味着，由于临时网络故障，该实例可能会被排除在流量之外。这个值的设置至少要高于leaseRenewalIntervalInSeconds中指定的值。默认90s
+    lease-expiration-duration-in-seconds: 60
+    # 心跳时间　即每15秒发送一次心跳  表明客户端需要将心跳发送到服务器端，以表明它还活着。如果心跳停止的时间超过了服务器设置的等待时间，那么服务器端将会从它的服务列表中删除该实例，从而将流量排除在该实例之外。默认30s
+    lease-renewal-interval-in-seconds: 15
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    hostname: localhost
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}   #eureka client向eureka server注册使用真实ip设置 默认为本机机器名
 
 # 屏蔽安全验证
 management:
