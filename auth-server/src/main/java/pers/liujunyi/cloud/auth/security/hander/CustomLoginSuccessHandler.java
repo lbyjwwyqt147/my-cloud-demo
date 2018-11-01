@@ -1,6 +1,5 @@
 package pers.liujunyi.cloud.auth.security.hander;
 
-import com.example.oauth.utils.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -8,6 +7,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
+import pers.liujunyi.common.restful.ResultUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/***
+ * 文件名称: CustomLoginSuccessHandler.java
+ * 文件描述: 登陆成功　后的处理类
+ * 公 司:
+ * 内容摘要:
+ * 其他说明:　当登陆成功　进入此类
+ * 完成日期:2018年08月27日
+ * 修改记录:
+ * @version 1.0
+ * @author ljy
+ */
 @Slf4j
 @Component
 public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -24,8 +35,8 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-        Map<String,Object> map =  new HashMap<>();
-        map.put("status","0");
+        Map<String, Object> map =  new HashMap<>();
+        map.put("status", ErrorCodeEnum.SUCCESS.getCode());
         //获得授权后可得到用户信息
         User userDetails =  (User) authentication.getPrincipal();
         //将身份 存储到SecurityContext里
@@ -35,9 +46,9 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         StringBuffer msg = new StringBuffer("用户：");
         msg.append(userDetails.getUsername()).append(" 成功登录系统.");
         log.info(msg.toString());
-        map.put("message","登录成功.");
-        map.put("userDetails",userDetails);
-        ResultUtil.writeJavaScript(httpServletResponse,map);
+        map.put("message", "登录成功.");
+        map.put("userDetails", userDetails);
+        ResultUtil.writeJavaScript(httpServletResponse, map);
     }
 
 }

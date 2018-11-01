@@ -5,6 +5,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
 import pers.liujunyi.common.restful.ResultUtil;
 
 import javax.servlet.ServletException;
@@ -33,7 +34,7 @@ public class CustomLoginFailHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
         log.info("================= 登录失败 =======================");
         Map<String, String> map =  new HashMap<>();
-        map.put("status", "1");
+        map.put("status", ErrorCodeEnum.LOGIN_FAIL.getCode());
         log.info(e.getLocalizedMessage());
         //用户登录时身份认证未通过
         if (e instanceof BadCredentialsException){

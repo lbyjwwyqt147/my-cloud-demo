@@ -15,6 +15,8 @@ import org.springframework.security.oauth2.provider.authentication.TokenExtracto
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Component;
+import pers.liujunyi.common.exception.DescribeException;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
 import pers.liujunyi.common.restful.ResultUtil;
 
 import javax.servlet.*;
@@ -68,57 +70,62 @@ public class PermitAuthenticationFilter extends OAuth2AuthenticationProcessingFi
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         log.info(" ================== =========================== ===================");
         log.info("当前访问的URL地址：" + request.getRequestURI());
-        Authentication authentication = this.tokenExtractor.extract(request);
-        if (authentication == null) {
-            if (this.stateless && this.isAuthenticated()) {
-                // SecurityContextHolder.clearContext();
-            }
-            log.info("当前访问的URL地址：" + request.getRequestURI() + "不进行拦截...");
-            filterChain.doFilter(request, response);
-        } else {
-            log.info("************　开始验证token　..........................   ");
-            String accessToken = request.getParameter("access_token");
-            String headerToken = request.getHeader(HEADER_AUTHORIZATION);
-            Map<String, String> map =  new HashMap<>();
-            map.put("status", "403");
-            AtomicBoolean error = new AtomicBoolean(false);
-            if (StringUtils.isNotBlank(accessToken)) {
-                try {
-                    OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken(accessToken);
-                    log.info("token =" + oAuth2AccessToken.getValue());
-                } catch (InvalidTokenException e){
-                    error.set(true);
-                    map.put("message",e.getMessage());
-                    log.info("** 无校的token信息.　** ");
-                    // throw new AccessDeniedException("无校的token信息.");
+        try {
+            Authentication authentication = this.tokenExtractor.extract(request);
+            if (authentication == null) {
+                if (this.stateless && this.isAuthenticated()) {
+                    // SecurityContextHolder.clearContext();
                 }
-
-            } else if (StringUtils.isNotBlank(headerToken) && headerToken.startsWith(BEARER_AUTHENTICATION)){
-                try {
-                    OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken(headerToken.split(" ")[0]);
-                    log.info("token =" + oAuth2AccessToken.getValue());
-                } catch (InvalidTokenException e){
-                    error.set(true);
-                    map.put("message",e.getMessage());
-                    log.info("** 无校的token信息.　** ");
-                    // throw new AccessDeniedException("无校的token信息.");
-                }
-
-            } else {
-                error.set(true);
-                map.put("message", "参数无token.");
-                log.info("** 参数无token.　** ");
-                //throw new AccessDeniedException("参数无token.");
-            }
-            if (!error.get()){
+                log.info("当前访问的URL地址：" + request.getRequestURI() + "不进行拦截...");
                 filterChain.doFilter(request, response);
             } else {
-                map.put("path", request.getServletPath());
-                map.put("timestamp", String.valueOf(LocalDateTime.now()));
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                ResultUtil.writeJavaScript(response, map);
+                log.info("************　开始验证token　..........................   ");
+                String accessToken = request.getParameter("access_token");
+                String headerToken = request.getHeader(HEADER_AUTHORIZATION);
+                Map<String, String> map =  new HashMap<>();
+                map.put("status", "403");
+                AtomicBoolean error = new AtomicBoolean(false);
+                if (StringUtils.isNotBlank(accessToken)) {
+                    try {
+                        OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken(accessToken);
+                        log.info("token =" + oAuth2AccessToken.getValue());
+                    } catch (InvalidTokenException e){
+                        error.set(true);
+                        map.put("message",e.getMessage());
+                        log.info("** 无校的token信息.　** ");
+                        // throw new AccessDeniedException("无校的token信息.");
+                    }
+
+                } else if (StringUtils.isNotBlank(headerToken) && headerToken.startsWith(BEARER_AUTHENTICATION)){
+                    try {
+                        OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken(headerToken.split(" ")[0]);
+                        log.info("token =" + oAuth2AccessToken.getValue());
+                    } catch (InvalidTokenException e){
+                        error.set(true);
+                        map.put("message",e.getMessage());
+                        log.info("** 无校的token信息.　** ");
+                        // throw new AccessDeniedException("无校的token信息.");
+                    }
+
+                } else {
+                    error.set(true);
+                    map.put("message", "参数无token.");
+                    log.info("** 参数无token.　** ");
+                    //throw new AccessDeniedException("参数无token.");
+                }
+                if (!error.get()){
+                    filterChain.doFilter(request, response);
+                } else {
+                    map.put("path", request.getServletPath());
+                    map.put("timestamp", String.valueOf(LocalDateTime.now()));
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    ResultUtil.writeJavaScript(response, map);
+                }
             }
+        } catch (Exception e) {
+            throw new DescribeException(ErrorCodeEnum.ERROR);
         }
+
     }
 
     @Override

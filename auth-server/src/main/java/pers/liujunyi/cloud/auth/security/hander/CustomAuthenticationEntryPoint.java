@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
 import pers.liujunyi.common.restful.ResultUtil;
+import pers.liujunyi.common.util.DateTimeUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,19 +33,18 @@ public class CustomAuthenticationEntryPoint extends OAuth2AuthenticationEntryPoi
 
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-        log.info(" ====================================================== ");
         log.info("请求url：" + httpServletRequest.getRequestURI());
         log.info("  ============ 身份认证失败..................... ");
         log.info(e.getMessage());
         log.info(e.getLocalizedMessage());
         e.printStackTrace();
         Map<String, String> map =  new HashMap<>();
-        map.put("status", "401");
-        map.put("message",e.getMessage());
+        map.put("status", ErrorCodeEnum.AUTHORITY.getCode());
+        map.put("message", e.getMessage());
+        map.put("description", ErrorCodeEnum.AUTHORITY.getMessage());
         map.put("path", httpServletRequest.getServletPath());
-        map.put("timestamp", String.valueOf(LocalDateTime.now()));
+        map.put("timestamp", DateTimeUtils.getCurrentDateTimeAsString());
         httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ResultUtil.writeJavaScript(httpServletResponse, map);
     }
-
 }

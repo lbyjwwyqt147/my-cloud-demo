@@ -1,9 +1,10 @@
 package pers.liujunyi.cloud.auth.entity;
 
-import lombok.Data;
+import lombok.*;
 import pers.liujunyi.common.entity.BaseEntity;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 
 /***
@@ -11,7 +12,14 @@ import java.util.Date;
  */
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class AuthUserInfo extends BaseEntity {
+
+    @Id
+    private Long id;
 
     /** 用户编码 */
     private String userCode;

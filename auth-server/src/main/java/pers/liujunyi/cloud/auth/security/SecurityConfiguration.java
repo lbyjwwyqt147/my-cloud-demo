@@ -13,8 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import pers.liujunyi.common.filter.SimpleCORSFilter;
 
 import javax.annotation.Resource;
 
@@ -64,20 +62,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .requestMatchers()   //　requestMatchers 配置　数组
-                .antMatchers("/oauth/**", "/login", "/home")
-                .and()
-                .authorizeRequests()         //authorizeRequests　配置权限　顺序为先配置需要放行的url 在配置需要权限的url，最后再配置.anyRequest().authenticated()
-                .antMatchers("/oauth/**").authenticated()
+                .authorizeRequests()   //authorizeRequests　配置权限　顺序为先配置需要放行的url 在配置需要权限的url，最后再配置.anyRequest().authenticated()
+                .antMatchers("/oauth/**", "/login", "/api/v1/user/register").permitAll()   //无条件放行的资源
+                .antMatchers("/api/**").authenticated()     //需要保护的资源
+                .anyRequest().authenticated() //其他资源都受保护
                 .and()
                 .formLogin()
-                .loginPage("/login")
+                .loginPage("/")
+                .passwordParameter("userPassword") // 指定密码参数名称（对应前端传给后天参数名）
+                .usernameParameter("userAccount") // 指定账号参数名称（对应前端传给后天参数名）
                 .permitAll();
-        //http.addFilterBefore(simpleCORSFilter, SecurityContextPersistenceFilter.class);
     }
 
 
-
+    /**
+     * 加密方式
+     * @return
+     */
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();

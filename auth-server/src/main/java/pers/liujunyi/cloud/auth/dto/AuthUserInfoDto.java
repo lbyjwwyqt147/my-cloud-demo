@@ -1,6 +1,6 @@
 package pers.liujunyi.cloud.auth.dto;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import pers.liujunyi.common.dto.BaseDto;
 
@@ -13,6 +13,10 @@ import javax.validation.constraints.Pattern;
  *  AuthUserInfoDto
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class AuthUserInfoDto extends BaseDto {
 
     /** 用户编码 */

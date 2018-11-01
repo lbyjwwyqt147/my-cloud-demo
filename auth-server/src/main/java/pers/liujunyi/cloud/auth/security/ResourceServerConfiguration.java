@@ -21,8 +21,9 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import pers.liujunyi.cloud.auth.security.hander.*;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
+import pers.liujunyi.common.util.DateTimeUtils;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,10 +63,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     public void configure(HttpSecurity http) throws Exception {
 
         // 配置那些资源需要保护的
-        http.requestMatchers().antMatchers("/api/**")
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/**").authenticated()
+        http.authorizeRequests()   //authorizeRequests　配置权限　顺序为先配置需要放行的url 在配置需要权限的url，最后再配置.anyRequest().authenticated()
+                .antMatchers("/oauth/**", "/login", "/api/v1/user/register").permitAll()   //无条件放行的资源
+                .antMatchers("/api/**").authenticated()     //需要保护的资源
+                .anyRequest().authenticated()  //其他资源都受保护
                 .and()
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler())  //权限认证失败业务处理
                 .authenticationEntryPoint(customAuthenticationEntryPoint());  //认证失败的业务处理
@@ -73,23 +74,39 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
     }
 
+    /**
+     * 注册退出成功　Bean
+     * @return
+     */
     @Bean
     public LogoutSuccessHandler customLogoutSuccessHandler(){
         return new CustomLogoutSuccessHandler();
     }
 
 
+    /**
+     * 注册登陆失败　Bean
+     * @return
+     */
     @Bean
     public AuthenticationFailureHandler customLoginFailHandler(){
         return new CustomLoginFailHandler();
     }
 
 
+    /**
+     * 注册身份认证失败　Bean
+     * @return
+     */
     @Bean
     public OAuth2AuthenticationEntryPoint customAuthenticationEntryPoint(){
         return new CustomAuthenticationEntryPoint();
     }
 
+    /**
+     * 注册权限认证失败　Bean
+     * @return
+     */
     @Bean
     public OAuth2AccessDeniedHandler customAccessDeniedHandler(){
         return new CustomAccessDenieHandler();
@@ -113,9 +130,10 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 if(401 == responseEntity.getStatusCode().value()){
                     //自定义返回数据格式
                     Map<String, String> map =  new HashMap<>();
-                    map.put("status", "401");
+                    map.put("status", ErrorCodeEnum.TOKEN_INVALID.getCode());
                     map.put("message", e.getMessage());
-                    map.put("timestamp", String.valueOf(LocalDateTime.now()));
+                    map.put("timestamp", DateTimeUtils.getCurrentDateTimeAsString());
+                    map.put("description", ErrorCodeEnum.TOKEN_INVALID.getMessage());
                     return new ResponseEntity(JSON.toJSONString(map), headers, responseEntity.getStatusCode());
                 } else {
                     return new ResponseEntity(body, headers, responseEntity.getStatusCode());

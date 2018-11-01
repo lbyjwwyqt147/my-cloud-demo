@@ -4,13 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.stereotype.Component;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
 import pers.liujunyi.common.restful.ResultUtil;
+import pers.liujunyi.common.util.DateTimeUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,10 +38,11 @@ public class CustomAccessDenieHandler extends OAuth2AccessDeniedHandler {
         log.info(authException.getLocalizedMessage());
         authException.printStackTrace();
         Map<String, String> map =  new HashMap<>();
-        map.put("status", "403");
+        map.put("status", ErrorCodeEnum.AUTHORITY.getCode());
         map.put("message", authException.getMessage());
+        map.put("description", ErrorCodeEnum.AUTHORITY.getMessage());
         map.put("path", httpServletRequest.getServletPath());
-        map.put("timestamp", String.valueOf(LocalDateTime.now()));
+        map.put("timestamp", DateTimeUtils.getCurrentDateTimeAsString());
         httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ResultUtil.writeJavaScript(httpServletResponse, map);
     }
