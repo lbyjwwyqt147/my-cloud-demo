@@ -3,8 +3,7 @@ package pers.liujunyi.cloud.auth.entity;
 import lombok.*;
 import pers.liujunyi.common.entity.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 /***
@@ -12,6 +11,7 @@ import java.util.Date;
  */
 @Data
 @Entity
+@Table(name = "AUTH_USER_INFO")
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
@@ -19,6 +19,7 @@ import java.util.Date;
 public class AuthUserInfo extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /** 用户编码 */
@@ -50,4 +51,7 @@ public class AuthUserInfo extends BaseEntity {
 
     /** 最后登陆时间 */
     private Date lastLoginDate;
+
+    /** 用户类型　０：普通　　-1　超级管理员 */
+    private Byte userType;
 }

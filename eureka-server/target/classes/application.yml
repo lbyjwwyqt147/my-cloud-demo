@@ -1,0 +1,18 @@
+server:
+  port: 18080
+
+spring:
+  application:
+    name: eurka-server
+
+eureka:
+  instance:
+    hostname: localhost   # 主机地址
+  client:
+    register-with-eureka: false  # 注册中心告诉自己不能向自己注册自己，默认为true
+    fetch-registry: false  # 获取注册信息
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    enable-self-preservation: false     # 关闭自我保护
+    eviction-interval-timer-in-ms: 60000  # 清理时间间隔  服务器清理服务列表的定时器 单位 毫秒

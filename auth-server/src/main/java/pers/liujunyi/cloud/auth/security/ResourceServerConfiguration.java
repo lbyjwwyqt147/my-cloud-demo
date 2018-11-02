@@ -2,6 +2,7 @@ package pers.liujunyi.cloud.auth.security;
 
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +52,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     private TokenStore tokenStore;
     @Autowired
     private PermitAuthenticationFilter permitAuthenticationFilter;
+    @Value("${security.exclude.antMatchers}")
+    private String excludeAntMatchers;
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
@@ -64,7 +67,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
         // 配置那些资源需要保护的
         http.authorizeRequests()   //authorizeRequests　配置权限　顺序为先配置需要放行的url 在配置需要权限的url，最后再配置.anyRequest().authenticated()
-                .antMatchers("/oauth/**", "/login", "/api/v1/user/register").permitAll()   //无条件放行的资源
+                //.antMatchers("/oauth/**", "/login", "/api/v1/user/register").permitAll()   //无条件放行的资源
+                .antMatchers(excludeAntMatchers.split(",")).permitAll()   //无条件放行的资源
                 .antMatchers("/api/**").authenticated()     //需要保护的资源
                 .anyRequest().authenticated()  //其他资源都受保护
                 .and()
