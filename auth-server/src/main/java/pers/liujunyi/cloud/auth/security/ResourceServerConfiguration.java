@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.provider.error.WebResponseExceptionTr
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import pers.liujunyi.cloud.auth.security.hander.*;
@@ -73,7 +74,13 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .anyRequest().authenticated()  //其他资源都受保护
                 .and()
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler())  //权限认证失败业务处理
-                .authenticationEntryPoint(customAuthenticationEntryPoint());  //认证失败的业务处理
+                .authenticationEntryPoint(customAuthenticationEntryPoint())  //认证失败的业务处理
+                .and()
+                .formLogin()
+                .loginProcessingUrl("/api/v1/user/login")  //指定登陆url
+                .successHandler(customLoginSuccessHandler())  //登陆成功处理类
+                .failureHandler(customLoginFailHandler())  //登陆失败处理类
+                .permitAll();
         http.addFilterBefore(permitAuthenticationFilter, AbstractPreAuthenticatedProcessingFilter.class); //自定义token过滤 token校验失败后自定义返回数据格式
 
     }
@@ -95,6 +102,15 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     @Bean
     public AuthenticationFailureHandler customLoginFailHandler(){
         return new CustomLoginFailHandler();
+    }
+
+    /**
+     * 注册登陆成功　Bean
+     * @return
+     */
+    @Bean
+    public AuthenticationSuccessHandler customLoginSuccessHandler(){
+        return new CustomLoginSuccessHandler();
     }
 
 

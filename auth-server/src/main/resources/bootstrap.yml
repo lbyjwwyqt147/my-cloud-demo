@@ -23,7 +23,7 @@ spring:
       refresh:
         enabled: true  #开启总线消息更新功能
 
-  jp
+
 eureka:
   client:
     service-url:

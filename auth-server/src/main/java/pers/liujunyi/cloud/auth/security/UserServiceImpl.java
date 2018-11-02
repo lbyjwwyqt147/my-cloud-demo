@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pers.liujunyi.cloud.auth.entity.AuthUserInfo;
 import pers.liujunyi.cloud.auth.repository.auth.AuthUserInfoRepository;
+import pers.liujunyi.common.exception.DescribeException;
+import pers.liujunyi.common.exception.ErrorCodeEnum;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserDetailsService {
         if (userInfo == null) {
             log.info("登录用户【" + userName + "】不存在.");
             throw new UsernameNotFoundException("登录用户【" + userName + "】不存在.");
+        }
+        if (userInfo.getStatus() == 1) {
+            throw new DescribeException(ErrorCodeEnum.USER_LOCK);
         }
         User userDetail = new User(userInfo.getUserAccount(), userInfo.getUserPassword(), getAuthority());
         return userDetail;

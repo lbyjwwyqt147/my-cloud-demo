@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.annotation.Resource;
 
@@ -40,9 +43,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     @Value("${security.exclude.antMatchers}")
     private String excludeAntMatchers;
-
+    @Autowired
+    private AuthenticationFailureHandler customLoginFailHandler;
+    @Autowired
+    private AuthenticationSuccessHandler customLoginSuccessHandler;
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
-    @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
@@ -72,9 +78,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated() //其他资源都受保护
                 .and()
                 .formLogin()
+                .loginProcessingUrl("/api/v1/user/login")  //指定登陆url
                 .loginPage("/")
                 .passwordParameter("userPassword") // 指定密码参数名称（对应前端传给后天参数名）
                 .usernameParameter("userAccount") // 指定账号参数名称（对应前端传给后天参数名）
+                .successHandler(customLoginSuccessHandler)  //登陆成功处理类
+                .failureHandler(customLoginFailHandler)  //登陆失败处理类
                 .permitAll();
     }
 

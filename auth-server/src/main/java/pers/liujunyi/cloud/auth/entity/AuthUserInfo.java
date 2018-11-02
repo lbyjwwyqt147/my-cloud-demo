@@ -11,7 +11,6 @@ import java.util.Date;
  */
 @Data
 @Entity
-@Table(name = "AUTH_USER_INFO")
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
