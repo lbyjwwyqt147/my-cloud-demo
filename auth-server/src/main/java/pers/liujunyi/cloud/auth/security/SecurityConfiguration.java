@@ -15,8 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.annotation.Resource;
 
@@ -43,10 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     @Value("${security.exclude.antMatchers}")
     private String excludeAntMatchers;
-    @Autowired
-    private AuthenticationFailureHandler customLoginFailHandler;
-    @Autowired
-    private AuthenticationSuccessHandler customLoginSuccessHandler;
+
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -82,8 +77,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .loginPage("/")
                 .passwordParameter("userPassword") // 指定密码参数名称（对应前端传给后天参数名）
                 .usernameParameter("userAccount") // 指定账号参数名称（对应前端传给后天参数名）
-                .successHandler(customLoginSuccessHandler)  //登陆成功处理类
-                .failureHandler(customLoginFailHandler)  //登陆失败处理类
                 .permitAll();
     }
 

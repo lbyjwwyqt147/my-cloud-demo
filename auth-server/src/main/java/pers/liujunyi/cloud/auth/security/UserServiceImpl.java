@@ -41,7 +41,8 @@ public class UserServiceImpl implements UserDetailsService {
         AuthUserInfo userInfo = this.authUserInfoRepository.findFirstByUserAccount(userName);
         if (userInfo == null) {
             log.info("登录用户【" + userName + "】不存在.");
-            throw new UsernameNotFoundException("登录用户【" + userName + "】不存在.");
+            //throw new UsernameNotFoundException("登录用户【" + userName + "】不存在.");
+            throw new DescribeException(ErrorCodeEnum.LOGIN_INCORRECT);
         }
         if (userInfo.getStatus() == 1) {
             throw new DescribeException(ErrorCodeEnum.USER_LOCK);
